@@ -1,10 +1,68 @@
--- SQL Portfolio Project: Sales Data Analysis
+# 🧾 Sales Data Analysis (SQL Portfolio Project)
+
+This project demonstrates how SQL can be used for real-world data cleaning, exploration, and business insights using a retail sales dataset.
+
+---
+
+##  Project Goals
+
+- Remove duplicate entries using window functions
+- Standardize and clean text fields
+- Generate product and region-level insights
+
+---
+
+##  Dataset Fields
+
+- Transaction ID
+- Date
+- Product Category
+- Product Name
+- Units Sold
+- Unit Price
+- Total Revenue
+- Region
+- Payment Method
+
+---
+
+##  Data Cleaning
+
+- ✅ Removed duplicate rows using `ROW_NUMBER() OVER (...)`
+- ✅ Trimmed extra spaces from `Product Name`
+
+---
+
+##  Key Insights
+
+
+|  Best Category by Revenue | Grouped by region and category |
+|  Top Products Sold | Monthly and yearly trends |
+|  Region Trends | Revenue by region and time |
+|  Payment Methods | Transaction volume and revenue |
+|  Most Expensive Products | Highest-priced items by region |
+
+---
+
+## SQL Features Used
+
+- `CTE` (Common Table Expressions)
+- `ROW_NUMBER()` window function
+- `GROUP BY`, `ORDER BY`
+- Aggregates: `SUM()`, `MAX()`, `COUNT()`
+- String functions: `TRIM()`, `SUBSTRING()`
+- Date functions: `YEAR()`, `MONTH()`
+
+---
+
 
 -- Step 1: Create working table
+
 CREATE TABLE sales_data2 LIKE sales_data;
 INSERT INTO sales_data2 SELECT * FROM sales_data;
 
 -- Step 2: Identify and remove duplicates
+
 WITH duplicate_cte AS (
   SELECT *,
          ROW_NUMBER() OVER (
@@ -23,4 +81,73 @@ UPDATE sales_data2
 SET `Product Name` = TRIM(`Product Name`);
 
 -- Step 4: Exploratory Analysis
--- [KPI Summary, Revenue by Category, Top Products... full content above]
+
+
+--  Best-Selling Category by Region
+
+SELECT `Region`, `Product Category`, SUM(`Total Revenue`) AS total_revenue
+FROM sales_data2
+GROUP BY `Region`, `Product Category`
+ORDER BY total_revenue DESC;
+
+--  Monthly Product Sales by Region
+
+SELECT 
+  YEAR(`Date`) AS year,
+  MONTH(`Date`) AS month,
+  `Product Name`,
+  `Region`,
+  SUM(`Units Sold`) AS total_units_sold
+FROM sales_data2
+GROUP BY year, month, `Product Name`, `Region`
+ORDER BY total_units_sold DESC;
+
+--  Top Revenue Month
+
+SELECT 
+  SUBSTRING(`Date`, 1, 7) AS month,
+  MAX(`Total Revenue`) AS top_revenue
+FROM sales_data2
+GROUP BY month
+ORDER BY top_revenue DESC;
+
+--  Yearly Revenue by Category
+
+SELECT 
+  `Product Category`, 
+  YEAR(`Date`) AS year,
+  SUM(`Total Revenue`) AS sum_total_revenue
+FROM sales_data2
+GROUP BY `Product Category`, YEAR(`Date`)
+ORDER BY sum_total_revenue DESC;
+
+--  Highest Price Products
+
+SELECT 
+  `Product Name`, 
+  `Region`,
+  MAX(`Unit Price`) AS max_price
+FROM sales_data2
+GROUP BY `Product Name`, `Region`
+ORDER BY max_price DESC;
+
+--  Payment Method Summary
+
+SELECT 
+  `Payment Method`, 
+  COUNT(*) AS count_method, 
+  SUM(`Total Revenue`) AS sum_revenue
+FROM sales_data2
+GROUP BY `Payment Method`
+ORDER BY sum_revenue DESC;
+
+--  Most Expensive Products by Price
+
+SELECT 
+  `Product Name`, 
+  SUM(`Unit Price`) AS sum_price
+FROM sales_data2
+GROUP BY `Product Name`
+ORDER BY sum_price DESC
+LIMIT 5;
+
