@@ -10,7 +10,7 @@ Product availability
 
 🛠️ Tools Used
 Google Forms – Survey collection
-Power BI – Interactive visualizations and dashboards
+Power BI – visualizations
 
 -------------------------------------------------
 
@@ -23,7 +23,7 @@ Best-selling products
 Monthly sales trends
 
 🛠️ Tools Used
-SQL
-Tableau for data visualization
+SQL (My SQL)
+Tableau - visualization
 
 
